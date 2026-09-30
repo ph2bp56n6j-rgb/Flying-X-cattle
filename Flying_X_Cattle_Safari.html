@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#304b3a">
+<title>Flying X Cattle</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3efe5;color:#26352b;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding-bottom:88px}
+header{background:#304b3a;color:white;padding:calc(17px + env(safe-area-inset-top)) 18px 17px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:3}.brand{font:700 12px Georgia,serif;letter-spacing:3px}.subtitle{opacity:.7;font-size:11px;margin-top:3px}.topbtn{border:0;border-radius:50%;width:44px;height:44px;background:#e2d4b4;color:#304b3a;font-size:27px}
+main{max-width:720px;margin:auto}.screen{display:none;padding:18px}.screen.active{display:block}
+.hero{background:#d9d0b7;border-radius:20px;padding:21px;display:flex;justify-content:space-between;align-items:center}.hero label{font-size:10px;letter-spacing:2px}.hero b{display:block;font:44px Georgia,serif;margin:2px 0}.mark{font:65px Georgia,serif;opacity:.5;transform:rotate(-14deg)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:13px 0}.stats button{border:0;background:white;border-radius:15px;padding:14px 5px;color:#304b3a}.stats b{display:block;font:25px Georgia,serif}.stats span{font-size:10px;color:#69746c}
+.head{display:flex;justify-content:space-between;align-items:center;margin:19px 0 10px}.head h2{font:22px Georgia,serif;margin:0}.head button{border:0}.primary{background:#304b3a;color:#fff;border-radius:10px;padding:10px 13px;font-weight:700}
+.search{width:100%;padding:14px;border:0;border-radius:12px;font-size:16px;margin-bottom:9px}.card{background:#fff;border-radius:16px;padding:15px;margin:10px 0;box-shadow:0 1px 4px #0000000b}.cardline{display:flex;justify-content:space-between;gap:10px}.tag{font-weight:800;font-size:17px}.muted{font-size:13px;color:#707971;margin-top:4px}.pill{font-size:10px;background:#e4ede4;color:#405b45;border-radius:20px;padding:5px 8px;height:max-content}.details{display:flex;flex-wrap:wrap;gap:8px 15px;font-size:13px;margin-top:10px}.actions{display:flex;gap:7px;margin-top:12px}.actions button{border:0;background:#eee9dd;border-radius:9px;padding:8px 10px;color:#39483e}.actions .danger{color:#8a3e35}.empty{text-align:center;color:#7c837d;padding:35px 10px}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #ddd8ce;display:grid;grid-template-columns:repeat(5,1fr);padding:8px 3px calc(8px + env(safe-area-inset-bottom));z-index:5}nav button{border:0;background:none;color:#707970;font-size:19px}nav span{display:block;font-size:9px;margin-top:3px}nav button.active{color:#304b3a;font-weight:700}
+.modal{display:none;position:fixed;inset:0;background:#0008;z-index:10;align-items:flex-end}.modal.show{display:flex}.sheet{background:#f8f5ed;width:100%;max-height:94vh;overflow:auto;border-radius:22px 22px 0 0;padding:18px}.sheethead{display:flex;justify-content:space-between;align-items:center}.sheet h2{font:24px Georgia,serif;margin:5px 0 15px}.close{border:0;background:none;font-size:30px}.field{margin:11px 0}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:5px}.field input,.field select,.field textarea{width:100%;padding:12px;border:1px solid #d6d0c3;border-radius:10px;background:#fff;font:inherit}.field textarea{min-height:80px}.save{width:100%;border:0;border-radius:12px;background:#304b3a;color:#fff;padding:15px;font-size:16px;font-weight:700;margin-top:8px}.hint{font-size:12px;color:#6f786f;margin:8px 0 15px}
+</style></head>
+<body>
+<header><div><div class="brand">✕ FLYING X CATTLE</div><div class="subtitle">Ranch herd manager</div></div><button class="topbtn" onclick="openForm('cattle')">＋</button></header>
+<main>
+<section id="home" class="screen active">
+<div class="hero"><div><label>ACTIVE HERD</label><b id="count">0</b><small>cattle</small></div><div class="mark">✕</div></div>
+<div class="stats"><button onclick="go('calves')"><b id="calvesN">0</b><span>CALVES</span></button><button onclick="go('health')"><b id="dueN">0</b><span>DUE SOON</span></button><button onclick="go('sold')"><b id="soldN">0</b><span>SOLD</span></button></div>
+<div class="head"><h2>Recent cattle</h2><button onclick="go('cattle')">View all</button></div><div id="recent"></div>
+</section>
+<section id="cattle" class="screen"><div class="head"><h2>Active cattle</h2><button class="primary" onclick="openForm('cattle')">＋ Add</button></div><input id="search" class="search" placeholder="Search tag, name, breed…" oninput="render()"><div id="cattleList"></div></section>
+<section id="calves" class="screen"><div class="head"><h2>Calves</h2><button class="primary" onclick="openForm('calf')">＋ Add</button></div><div id="calfList"></div></section>
+<section id="health" class="screen"><div class="head"><h2>Health & medications</h2><button class="primary" onclick="openForm('health')">＋ Add</button></div><div id="healthList"></div></section>
+<section id="sold" class="screen"><div class="head"><h2>Sold cattle</h2><button class="primary" onclick="openForm('sold')">＋ Add</button></div><div id="soldList"></div></section>
+</main>
+<nav><button data-page="home" onclick="go('home')">⌂<span>Home</span></button><button data-page="cattle" onclick="go('cattle')">🐄<span>Cattle</span></button><button data-page="calves" onclick="go('calves')">🐮<span>Calves</span></button><button data-page="health" onclick="go('health')">💊<span>Health</span></button><button data-page="sold" onclick="go('sold')">💰<span>Sold</span></button></nav>
+<div id="modal" class="modal"><div class="sheet"><div class="sheethead"><h2 id="formTitle"></h2><button class="close" onclick="closeForm()">×</button></div><div class="hint" id="formHint"></div><form id="form"></form></div></div>
+<script>
+const KEY='flyingX.v2';
+let db=JSON.parse(localStorage.getItem(KEY)||'{"cattle":[],"calves":[],"health":[],"sold":[]}');
+const $=x=>document.querySelector(x), $$=x=>[...document.querySelectorAll(x)];
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+const persist=()=>localStorage.setItem(KEY,JSON.stringify(db));
+function go(page){$$('.screen').forEach(s=>s.classList.toggle('active',s.id===page));$$('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));render();scrollTo(0,0)}
+function input(n,l,t='text',req=''){return `<div class="field"><label>${l}</label><input name="${n}" type="${t}" ${req}></div>`}
+function select(n,l,opts){return `<div class="field"><label>${l}</label><select name="${n}"><option value="">Select…</option>${opts.map(x=>`<option>${x}</option>`).join('')}</select></div>`}
+function area(n,l){return `<div class="field"><label>${l}</label><textarea name="${n}"></textarea></div>`}
+function openForm(kind,id=null){
+ const edit=id!==null;
+ const titles={cattle:edit?'Edit cattle':'Add cattle',calf:edit?'Edit calf':'Add calf',health:edit?'Edit health record':'Add health / medication',sold:edit?'Edit sale':'Record sold cattle'};
+ $('#formTitle').textContent=titles[kind]; $('#formHint').textContent=edit?'Update the record below.':'Enter what you know now — you can edit it later.';
+ const list={cattle:'cattle',calf:'calves',health:'health',sold:'sold'}, arr=db[list[kind]], old=edit?arr[id]:{};
+ let f='';
+ if(kind==='cattle') f=input('tag','Tag / ID','text','required')+input('name','Name / nickname')+select('sex','Sex',['Cow','Bull','Heifer','Steer'])+input('breed','Breed')+input('birth','Date of birth','date')+input('dam','Dam / mother')+input('sire','Sire / father')+input('weight','Current weight')+area('notes','Notes');
+ if(kind==='calf') f=input('tag','Calf tag / ID','text','required')+input('birth','Birth date','date')+select('sex','Sex',['Heifer','Bull calf'])+input('dam','Dam / mother')+input('sire','Sire / father')+input('birthWeight','Birth weight')+input('weanWeight','Weaning weight')+area('notes','Notes');
+ if(kind==='health') f=input('tag','Animal tag / ID','text','required')+input('med','Medication / vaccine','text','required')+input('date','Date given','date','required')+input('dose','Dose')+input('route','Route')+input('next','Next due','date')+input('withdrawal','Withdrawal period')+area('notes','Reason / notes');
+ if(kind==='sold') f=input('tag','Tag / ID','text','required')+input('date','Sale date','date','required')+input('buyer','Buyer')+input('weight','Sale weight')+input('priceLb','Price / lb','number')+input('price','Total sale price','number')+area('notes','Notes');
+ $('#form').innerHTML=f+'<button class="save">Save record</button>';
+ Object.entries(old).forEach(([k,v])=>{const el=$(`[name="${k}"]`);if(el)el.value=v});
+ $('#form').onsubmit=e=>{e.preventDefault();const o=Object.fromEntries(new FormData(e.target).entries());if(edit)arr[id]=o;else arr.push(o);persist();closeForm();render()};
+ $('#modal').classList.add('show');
+}
+function closeForm(){$('#modal').classList.remove('show')}
+function remove(kind,id){if(confirm('Delete this record?')){db[kind].splice(id,1);persist();render()}}
+function moveToSold(id){const a=db.cattle[id];openForm('sold');setTimeout(()=>{const el=$('[name="tag"]');if(el)el.value=a.tag||''},30)}
+function card(a,kind,id){
+ const label=kind==='cattle'?'Cattle':kind==='calves'?'Calf':kind==='health'?'Health':'Sold';
+ const title=a.tag||a.name||'No tag';
+ let sub=kind==='health'?(a.med||'Medication'):(a.name||a.breed||'');
+ let det=[];
+ if(a.sex)det.push('Sex: '+a.sex); if(a.birth)det.push('Born: '+a.birth); if(a.dam)det.push('Dam: '+a.dam);
+ if(a.date)det.push('Date: '+a.date); if(a.next)det.push('Next: '+a.next); if(a.weight)det.push('Weight: '+a.weight);
+ if(a.price)det.push('Sale: $'+a.price); if(a.priceLb)det.push('$'+a.priceLb+'/lb');
+ return `<div class="card"><div class="cardline"><div><div class="tag">${esc(title)}</div><div class="muted">${esc(sub)}</div></div><span class="pill">${label}</span></div><div class="details">${det.map(x=>`<span>${esc(x)}</span>`).join('')}</div>${a.notes?`<div class="muted">${esc(a.notes)}</div>`:''}<div class="actions"><button onclick="openForm('${kind}',${id})">Edit</button>${kind==='cattle'?`<button onclick="moveToSold(${id})">Mark sold</button>`:''}<button class="danger" onclick="remove('${kind}',${id})">Delete</button></div></div>`
+}
+function render(){
+ $('#count').textContent=db.cattle.length;$('#calvesN').textContent=db.calves.length;$('#soldN').textContent=db.sold.length;
+ const soon=Date.now()+30*86400000;$('#dueN').textContent=db.health.filter(x=>x.next&&new Date(x.next).getTime()<=soon).length;
+ $('#recent').innerHTML=db.cattle.slice(-4).reverse().map((x,i)=>card(x,'cattle',db.cattle.length-1-i)).join('')||'<div class="empty">No cattle yet. Add your first animal.</div>';
+ const q=($('#search')?.value||'').toLowerCase();
+ $('#cattleList').innerHTML=db.cattle.map((x,i)=>[x,i]).filter(([x])=>JSON.stringify(x).toLowerCase().includes(q)).reverse().map(([x,i])=>card(x,'cattle',i)).join('')||'<div class="empty">No matching cattle.</div>';
+ $('#calfList').innerHTML=db.calves.map((x,i)=>card(x,'calves',i)).reverse().join('')||'<div class="empty">No calves yet.</div>';
+ $('#healthList').innerHTML=db.health.map((x,i)=>card(x,'health',i)).sort((a,b)=>String(a).localeCompare(String(b))).join('')||'<div class="empty">No health records yet.</div>';
+ $('#soldList').innerHTML=db.sold.map((x,i)=>card(x,'sold',i)).reverse().join('')||'<div class="empty">No sold cattle yet.</div>';
+}
+render();
+</script></body></html>
